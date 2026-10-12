@@ -1,0 +1,33 @@
+name: Google Flow Cloud Automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Prompt or instruction for Google Flow'
+        required: false
+        default: 'Generate test video clip'
+  schedule:
+    - cron: '0 12 * * *'
+
+jobs:
+  run-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Run Google Flow Automation via browser-use
+        run: |
+          python run_cloud_flow.py
