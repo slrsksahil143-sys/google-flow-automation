@@ -13,9 +13,14 @@ on:
   schedule:
     - cron: '0 12 * * *'
 
+concurrency:
+  group: flow-cloud-run
+  cancel-in-progress: true
+
 jobs:
   run-flow:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -34,7 +39,7 @@ jobs:
 
       - name: Run Google Flow Automation via browser-use
         env:
+          PYTHONUNBUFFERED: '1'
           GOOGLE_STORAGE_STATE: ${{ secrets.GOOGLE_STORAGE_STATE }}
         run: |
-          xvfb-run -a python run_cloud_flow.py || true
-
+          xvfb-run -a python run_cloud_flow.py
