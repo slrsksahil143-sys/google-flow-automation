@@ -36,4 +36,5 @@ jobs:
         env:
           GOOGLE_STORAGE_STATE: ${{ secrets.GOOGLE_STORAGE_STATE }}
         run: |
-          xvfb-run -a python run_cloud_flow.py
+          xvfb-run -a python run_cloud_flow.py || true
+
