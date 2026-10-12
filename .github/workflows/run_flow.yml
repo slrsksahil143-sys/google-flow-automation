@@ -42,4 +42,11 @@ jobs:
           PYTHONUNBUFFERED: '1'
           GOOGLE_STORAGE_STATE: ${{ secrets.GOOGLE_STORAGE_STATE }}
         run: |
-          xvfb-run -a python run_cloud_flow.py
+          xvfb-run -a python run_cloud_flow.py 2>&1 | tee runner.log
+      - name: Output Summary to GitHub
+        if: always()
+        run: |
+          echo '### Runner Log' >> 
+          echo '\' >> 
+          cat runner.log >> 
+          echo '\' >> 
