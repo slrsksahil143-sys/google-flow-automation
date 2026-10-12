@@ -1,4 +1,4 @@
-name: Google Flow Cloud Automation
+﻿name: Google Flow Cloud Automation
 
 on:
   push:
@@ -9,9 +9,7 @@ on:
       prompt:
         description: 'Prompt or instruction for Google Flow'
         required: false
-        default: 'Generate test video clip'
-  schedule:
-    - cron: '0 12 * * *'
+        default: '3D Pixar animated vegetable character running happily through market, full temporal motion, high framerate 3D CGI'
 
 concurrency:
   group: flow-cloud-run
@@ -20,7 +18,7 @@ concurrency:
 jobs:
   run-flow:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -35,15 +33,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install --with-deps chromium
-          sudo apt-get install -y xvfb
+          sudo apt-get install -y xvfb ffmpeg
 
       - name: Run Google Flow Automation via browser-use
         env:
           PYTHONUNBUFFERED: '1'
           GOOGLE_STORAGE_STATE: ${{ secrets.GOOGLE_STORAGE_STATE }}
+          INPUT_PROMPT: ${{ github.event.inputs.prompt || '3D Pixar animated vegetable character running happily through market, full temporal motion, high framerate 3D CGI' }}
         run: |
           xvfb-run -a python run_cloud_flow.py 2>&1 | tee runner.log
+
       - name: Print Runner Log
         if: always()
         run: |
           cat runner.log
+
+      - name: Upload Run Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flow-run-output
+          path: |
+            runner.log
+            *.png
+            output_clips/*.mp4
+          retention-days: 7
